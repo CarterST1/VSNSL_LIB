@@ -1,6 +1,6 @@
-# NOSL - A Simple Encoding and Decoding Library
+# VSNSL - A Simple Encoding and Decoding Library
 
-NOSL is a Python library designed to encode and decode data using a character mapping dictionary. It provides a simple interface for transforming strings into encoded data and vice versa, using a specified encryption lock.
+VSNSL is a Python library designed to encode and decode data using a character mapping dictionary. It provides a simple interface for transforming strings into encoded data and vice versa, using a specified encryption lock.
 
 ## Features
 
@@ -10,36 +10,36 @@ NOSL is a Python library designed to encode and decode data using a character ma
 
 ## Installation
 
-To use NOSL, clone the repository:
+To use VSNSL, clone the repository:
 
 ```bash
-git clone https://github.com/CarterST1/NOSL_LIB.git
-cd NOSL_LIB
+git clone https://github.com/CarterST1/VSNSL_LIB.git
+cd VSNSL_LIB
 ```
 
 ## Usage
 
-Here's a quick example of how to use the NOSL library:
+Here's a quick example of how to use the VSNSL library:
 
 ```python
-from NOSL import NOSL
+from VSNSL import VSNSL
 
-# Initialize the NOSL class with an encryption lock
-nosl = NOSL(encryptionLock=12345)
+# Initialize the VSNSL class with an encryption lock
+vsnsl = VSNSL(encryptionLock=12345)
 
 # Encode a string
-encoded_data = nosl.encodeData("Hello, World!")
+encoded_data = vsnsl.encodeData("Hello, World!")
 print(f"Encoded: {encoded_data}")
 
 # Decode the encoded string
-decoded_data = nosl.decodeData(encoded_data)
+decoded_data = vsnsl.decodeData(encoded_data)
 print(f"Decoded: {decoded_data}")
 ```
 
 ## Configuration
 
 - **Charset File**: Ensure that the `charset.json` file is located in the `resources` directory. This file contains the character mapping used for encoding and decoding.
-- **Logging**: Logs are stored in `resources/logs/activity.log`. You can adjust the logging level in the `NOSL.py` file.
+- **Logging**: Logs are stored in `resources/logs/activity.log`. You can adjust the logging level in the `VSNSL.py` file.
 
 ## Troubleshooting
 

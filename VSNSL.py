@@ -14,7 +14,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-class NOSL:
+class VSNSL:
     def __init__(self, encryptionLock: int):
         """Sets up the class with the encryption lock and the character mapping dictionary."""
         logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
