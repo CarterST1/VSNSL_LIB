@@ -15,8 +15,14 @@ logging.basicConfig(
 )
 
 class VSNSL:
+    """
+    VSNSL class for encoding and decoding data using a character mapping dictionary.
+    """
     def __init__(self, encryptionLock: int):
-        """Sets up the class with the encryption lock and the character mapping dictionary."""
+        """
+        Initializes the VSNSL class with the given encryption lock.
+        :param ``encryptionLock``: The encryption lock to use for encoding and decoding.
+        """
         logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
         charsetPath = Path(f'{Path(__file__).parent}/resources/charset.json')
         if not charsetPath.exists():
@@ -33,22 +39,33 @@ class VSNSL:
             self.letters[char] = int(num) + 100
         logger.info("Character mapping initialized.")
 
-    def get_pairs(self, s):
-        """Splits the string into chunks of 3 characters."""
+    def get_pairs(self, s: str, separator: int = 3) -> list:
+        """
+        Splits the string into chunks of the given separator.
+        :param ``s``: The string to split.
+        :param ``separator``: The number of characters to split the string into.
+        """
         pairs = []
-        for i in range(0, len(s) - 1, 3):
-            pairs.append(s[i:i+3])
+        for i in range(0, len(s) - 1, separator):
+            pairs.append(s[i:i+separator])
         return pairs
 
     def get_key(self, dictObj: dict, pitchfork: object) -> object:
-        """Returns the key of the given value in the dictionary."""
+        """
+        Returns the key of the given value in the dictionary.
+        :param ``dictObj``: The dictionary to search through.
+        :param ``pitchfork``: The value to search for in the dictionary.
+        """
         for key, value in dictObj.items():
             if value == pitchfork:
                 return key
         return None
 
     def encodeData(self, data: object) -> str:
-        """Encodes the given data using the character mapping dictionary."""
+        """
+        Encodes the given data using the character mapping dictionary.
+        :param ``data``: The data to encode.
+        """
         returnText = ''
         if isinstance(data, str):
             for letter in data:
@@ -64,7 +81,10 @@ class VSNSL:
             return encoded_result
 
     def decodeData(self, data: str) -> str:
-        """Decodes the given data using the character mapping dictionary."""
+        """
+        Decodes the given data using the character mapping dictionary.
+        :param ``data``: The data to decode.
+        """
         returnText = ''
         unfound_count = 0
         threshold = 5  # Set a threshold for the number of unfound values
@@ -74,7 +94,7 @@ class VSNSL:
         if isinstance(data, str):
             try:
                 multiplied_data = str(int(data) * self.encryptionLock)
-                pairs = self.get_pairs(multiplied_data)
+                pairs = self.get_pairs(multiplied_data, 3)
             except ValueError as e:
                 logger.error(f"Data format error: {e}")
                 raise ValueError("Decryption failed due to data format error.")
