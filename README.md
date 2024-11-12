@@ -13,8 +13,8 @@ NOSL is a Python library designed to encode and decode data using a character ma
 To use NOSL, clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/nosl.git
-cd nosl
+git clone https://github.com/CarterST1/NOSL_LIB.git
+cd NOSL_LIB
 ```
 
 ## Usage
