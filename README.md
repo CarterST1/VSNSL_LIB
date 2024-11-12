@@ -1,6 +1,6 @@
 # VSNSL - A Simple Encoding and Decoding Library
 
-VSNSL is a Python library designed to encode and decode data using a character mapping dictionary. It provides a simple interface for transforming strings into encoded data and vice versa, using a specified encryption lock.
+VSNSL (stands for Very Simple Number Storage Language) is a Python library designed to encode and decode data using a character mapping dictionary. It provides a simple interface for transforming strings into encoded data and vice versa, using a specified encryption lock.
 
 ## Features
 
