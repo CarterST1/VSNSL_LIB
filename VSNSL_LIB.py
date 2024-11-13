@@ -20,7 +20,7 @@ class VSNSL:
 
     This class was developed for a science fair project, and it offers advantages such as extreme security.
 
-    .. versionadded:: 0.0.1
+    .. versionadded:: v0.1.1
 
     Attributes:
         letters (dict): A dictionary mapping characters to numbers.
@@ -35,7 +35,7 @@ class VSNSL:
 
         This constructor sets up the character mapping and encryption lock for encoding and decoding operations.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.1
 
         Args:
             encryptionLock (int): The encryption lock to use for encoding and decoding.
@@ -67,7 +67,7 @@ class VSNSL:
 
         This method is useful for breaking down encoded strings into manageable parts.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.1
 
         Args:
             s (str): The string to split.
@@ -94,7 +94,7 @@ class VSNSL:
 
         This method helps in reverse mapping from values to keys in the character dictionary.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.1
 
         Args:
             dictObj (dict): The dictionary to search through.
@@ -121,7 +121,7 @@ class VSNSL:
 
         This method converts strings into a secure numeric format based on the character mapping.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.1
             Was added to allow for encoding of data.
 
         Args:
@@ -157,7 +157,7 @@ class VSNSL:
 
         This method reverses the encoding process, converting numeric strings back to their original form.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.1
             Was added to allow for decoding of data.
 
         Args:
@@ -216,7 +216,7 @@ class VSNSL:
 
         This method facilitates the transition of data between different encryption locks.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.0.1
             Was added to make converting data between encryption locks easier.
 
         Args:
@@ -251,7 +251,7 @@ class VSNSL:
 
         This method allows batch processing of multiple strings for encoding.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.2
             Was added to make encoding batches easier.
 
         Args:
@@ -284,7 +284,7 @@ class VSNSL:
 
         This method allows batch processing of multiple encoded strings for decoding.
 
-        .. versionadded:: 0.0.1
+        .. versionadded:: v0.1.2
             Was added to make decoding batches easier.
 
         Args:
