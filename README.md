@@ -6,6 +6,7 @@ VSNSL (stands for Very Simple Number Storage Language) is a Python library desig
 
 - **Encoding**: Convert strings into encoded data using a character mapping.
 - **Decoding**: Revert encoded data back to its original string form.
+- **Batch Processing**: Encode and decode lists of strings in batch.
 - **Logging**: Comprehensive logging for tracking the encoding and decoding processes.
 
 ## Installation
@@ -34,6 +35,15 @@ print(f"Encoded: {encoded_data}")
 # Decode the encoded string
 decoded_data = vsnsl.decodeData(encoded_data)
 print(f"Decoded: {decoded_data}")
+
+# Encode a batch of strings
+data_list = ["abc", "def", "ghi"]
+encoded_list = vsnsl.encodeBatch(data_list)
+print(f"Encoded Batch: {encoded_list}")
+
+# Decode a batch of encoded strings
+decoded_list = vsnsl.decodeBatch(encoded_list)
+print(f"Decoded Batch: {decoded_list}")
 ```
 
 ## Configuration
@@ -45,6 +55,11 @@ print(f"Decoded: {decoded_data}")
 
 - **Charset File Not Found**: Ensure that the `charset.json` file is correctly placed in the `resources` directory.
 - **Decryption Errors**: If you encounter errors during decryption, check the encryption lock and ensure the data is not corrupted.
+
+## Changelog
+
+- **v0.1.1**: Initial release with basic encoding and decoding features.
+- **v0.1.2**: Added batch processing methods for encoding and decoding lists of strings.
 
 ## Contributing
 
