@@ -80,8 +80,7 @@ class VSNSL:
             .. code-block:: python
 
                 pairs = VSNSL.get_pairs("101102103", 3)
-                print(pairs)
-                # Returns: ["101", "102", "103"]
+                print(pairs) # Returns: ["101", "102", "103"]
         """
         pairs = []
         for i in range(0, len(s) - 1, separator):
@@ -107,8 +106,7 @@ class VSNSL:
             .. code-block:: python
 
                 key = VSNSL.get_key(VSNSL.letters, 101)
-                print(key)
-                # Returns: "a"
+                print(key) # Returns: "a"
         """
         for key, value in dictObj.items():
             if value == pitchfork:
@@ -134,8 +132,7 @@ class VSNSL:
             .. code-block:: python
 
                 encodedData = VSNSL.encodeData("abc")
-                print(encodedData)
-                # Returns: "101102103"
+                print(encodedData) # Returns: "101102103"
         """
         returnText = ''
         if isinstance(data, str):
@@ -170,8 +167,7 @@ class VSNSL:
             .. code-block:: python
 
                 decodedData = VSNSL.decodeData("101102103")
-                print(decodedData)
-                # Returns: "abc"
+                print(decodedData) # Returns: "abc"
         """
         returnText = ''
         unfound_count = 0
@@ -230,8 +226,7 @@ class VSNSL:
             .. code-block:: python
 
                 convertedData = VSNSL.convertData(2, "101102103")
-                print(convertedData)
-                # Returns: "201202203"
+                print(convertedData) # Returns: "201202203"
         """
         logger.info(f"Converting data from {self.encryptionLock} to {newEncryptionLock}")
         try:
@@ -266,8 +261,7 @@ class VSNSL:
                 vsnsl = VSNSL(1)
                 data_list = ["abc", "def", "ghi"]
                 encoded_list = vsnsl.encode_batch(data_list)
-                print(encoded_list)
-                # Example output: ["101102103", "104105106", "107108109"]
+                print(encoded_list) # returns: ["101102103", "104105106", "107108109"]
         """
         encoded_list = []
         for data in data_list:
@@ -299,8 +293,7 @@ class VSNSL:
                 vsnsl = VSNSL(1)
                 encoded_list = ["101102103", "104105106", "107108109"]
                 decoded_list = vsnsl.decode_batch(encoded_list)
-                print(decoded_list)
-                # Example output: ["abc", "def", "ghi"]
+                print(decoded_list) # returns: ["abc", "def", "ghi"]
         """
         decoded_list = []
         for encoded in encoded_list:
