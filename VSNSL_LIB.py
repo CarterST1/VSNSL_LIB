@@ -18,9 +18,9 @@ class VSNSL:
     """
     VSNSL class for encoding and decoding data using a character mapping dictionary.
 
-    This class was developed for a science fair project, and it offers advantages such as extreme security.
-
     .. versionadded:: v0.1.1
+
+    This class was developed for a science fair project, and it offers advantages such as extreme security.
 
     Attributes:
         letters (dict): A dictionary mapping characters to numbers.
@@ -31,11 +31,11 @@ class VSNSL:
 
     def __init__(self, encryptionLock: int):
         """
+        .. versionadded:: v0.1.1
+
         Initializes the VSNSL class with the given encryption lock.
 
         This constructor sets up the character mapping and encryption lock for encoding and decoding operations.
-
-        .. versionadded:: v0.1.1
 
         Args:
             encryptionLock (int): The encryption lock to use for encoding and decoding.
@@ -57,17 +57,22 @@ class VSNSL:
         self.encryptionLock = encryptionLock
         logger.info(f"Encryption lock set to: {self.encryptionLock}")
 
+        self.charset_offset = 100
+        logger.info(f"Charset offset set to: {self.charset_offset}")
+
         for char, num in self.letters.items():
-            self.letters[char] = int(num) + 100
+            self.letters[char] = int(num) + self.charset_offset
         logger.info("Character mapping initialized.")
 
     def get_pairs(self, s: str, separator: int = 3) -> list:
         """
+        .. versionadded:: v0.1.1
+        .. deprecated:: v0.1.2
+            This method is deprecated as it is no longer used. Not used in the current version of the VSNSL class.
+
         Splits the string into chunks of the given separator.
 
         This method is useful for breaking down encoded strings into manageable parts.
-
-        .. versionadded:: v0.1.1
 
         Args:
             s (str): The string to split.
@@ -89,11 +94,11 @@ class VSNSL:
 
     def get_key(self, dictObj: dict, pitchfork: object) -> object:
         """
+        .. versionadded:: v0.1.1
+
         Returns the key of the given value in the dictionary.
 
         This method helps in reverse mapping from values to keys in the character dictionary.
-
-        .. versionadded:: v0.1.1
 
         Args:
             dictObj (dict): The dictionary to search through.
@@ -115,12 +120,12 @@ class VSNSL:
 
     def encodeData(self, data: object) -> str:
         """
+        .. versionadded:: v0.1.1
+            Was added to allow for encoding of data.
+
         Encodes the given data using the character mapping dictionary.
 
         This method converts strings into a secure numeric format based on the character mapping.
-
-        .. versionadded:: v0.1.1
-            Was added to allow for encoding of data.
 
         Args:
             data (object): The data to encode.
@@ -150,12 +155,12 @@ class VSNSL:
 
     def decodeData(self, data: str) -> str:
         """
+        .. versionadded:: v0.1.1
+            Was added to allow for decoding of data.
+
         Decodes the given data using the character mapping dictionary.
 
         This method reverses the encoding process, converting numeric strings back to their original form.
-
-        .. versionadded:: v0.1.1
-            Was added to allow for decoding of data.
 
         Args:
             data (str): The data to decode.
@@ -171,14 +176,19 @@ class VSNSL:
         """
         returnText = ''
         unfound_count = 0
-        threshold = 5  # Set a threshold for the number of unfound values
+        threshold = 2  # Set a threshold for the number of unfound values
 
         logger.info(f"Starting decoding process for data: {data}")
 
         if isinstance(data, str):
             try:
                 multiplied_data = str(int(data) * self.encryptionLock)
-                pairs = self.get_pairs(multiplied_data, 3)
+                logger.debug(f"Multiplied data: {multiplied_data}")
+                pair_length = len(str(self.charset_offset))
+                pairs = []
+                for i in range(0, len(multiplied_data), pair_length):
+                    pairs.append(multiplied_data[i:i+pair_length])
+                logger.debug(f"Pairs: {pairs}")
             except ValueError as e:
                 logger.error(f"Data format error: {e}")
                 raise ValueError("Decryption failed due to data format error.")
@@ -198,22 +208,22 @@ class VSNSL:
 
             if unfound_count > threshold:
                 logger.error(f"Too many unfound values ({unfound_count}). Possible issues: incorrect encryption lock, data corruption, or charset mismatch.")
-                raise ValueError("Decryption failed due to too many unfound values.")
+                raise ValueError("Decryption failed due to too many unfound values. Please check the encryption lock.")
 
         if unfound_count > 0:
-            logger.warning(f"{unfound_count} values not found in character mapping.")
+            logger.warning(f"{unfound_count} values not found in character mapping. This may indicate an incorrect encryption lock.")
 
         logger.info("Successfully decoded data.")
         return returnText
     
     def convertData(self, newEncryptionLock: int, data: str) -> str:
         """
+        .. versionadded:: v0.0.1
+            Was added to make converting data between encryption locks easier.
+
         Converts the data from the current encryption lock to the new encryption lock.
 
         This method facilitates the transition of data between different encryption locks.
-
-        .. versionadded:: v0.0.1
-            Was added to make converting data between encryption locks easier.
 
         Args:
             newEncryptionLock (int): The new encryption lock.
@@ -242,12 +252,24 @@ class VSNSL:
         
     def encodeBatch(self, data_list: list) -> list:
         """
-        Encode a list of strings.
-
-        This method allows batch processing of multiple strings for encoding.
-
         .. versionadded:: v0.1.2
             Was added to make encoding batches easier.
+
+        .. note::
+            Instances of None will be returned if an error occurs during decoding.
+
+            Example:
+                .. code-block:: python
+
+                    vsnsl = VSNSL(1)
+                    encoded_list = ["101102103", "104105106", "107108205"]
+                    decoded_list = vsnsl.decode_batch(encoded_list)
+                    print(decoded_list) # returns: ["abc", "def", None]
+
+        .. caution::
+            Encoding a large batch of data may cause significant performance issues.
+
+        This method allows batch processing of multiple strings for encoding.
 
         Args:
             data_list (list): A list of strings to encode.
@@ -274,12 +296,24 @@ class VSNSL:
 
     def decodeBatch(self, encoded_list: list) -> list:
         """
-        Decode a list of encoded strings.
-
-        This method allows batch processing of multiple encoded strings for decoding.
-
         .. versionadded:: v0.1.2
             Was added to make decoding batches easier.
+
+        .. note::
+            Instances of None will be returned if an error occurs during decoding.
+
+            Example:
+                .. code-block:: python
+
+                    vsnsl = VSNSL(1)
+                    encoded_list = ["101102103", "104105106", "107108205"]
+                    decoded_list = vsnsl.decode_batch(encoded_list)
+                    print(decoded_list) # returns: ["abc", "def", None]
+
+        .. caution::
+            Decoding a large batch of data may cause significant performance issues.
+
+        This method allows batch processing of multiple encoded strings for decoding.
 
         Args:
             encoded_list (list): A list of encoded strings to decode.
