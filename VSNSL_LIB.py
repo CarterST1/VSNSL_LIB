@@ -256,15 +256,15 @@ class VSNSL:
             Was added to make encoding batches easier.
 
         .. note::
-            Instances of None will be returned if an error occurs during decoding.
+            Instances of None will be returned if an error occurs during encoding (If character isn't found in :attr:`self.letters`).
 
             Example:
                 .. code-block:: python
 
                     vsnsl = VSNSL(1)
-                    encoded_list = ["101102103", "104105106", "107108205"]
-                    decoded_list = vsnsl.decode_batch(encoded_list)
-                    print(decoded_list) # returns: ["abc", "def", None]
+                    decoded_list = vsnsl.encodeBatch(["abc", "def", "😁"])
+                    encoded_list = vsnsl.encode_batch(encoded_list)
+                    print(encoded_list) # returns: ["101102103", "104105106", None]
 
         .. caution::
             Encoding a large batch of data may cause significant performance issues.
