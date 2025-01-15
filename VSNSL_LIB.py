@@ -2,6 +2,7 @@ import json
 import logging
 from pathlib import Path
 import sys
+from typing import List
 
 # Get the logger for the current module
 logger = logging.getLogger(__name__)
@@ -147,9 +148,8 @@ class VSNSL:
                     logger.debug(f"Encoded {letter} to {self.letters[letter]}")
                 except Exception as e:
                     logger.exception("Exception during encoding")
-            if len(returnText) > 640:
-                sys.set_int_max_str_digits(len(returnText))
-            encoded_result = str(int(returnText) // self.encryptionLock)
+            # Ensure the encoded result is correctly adjusted by the encryption lock
+            encoded_result = str(int(returnText) * self.encryptionLock)  # Change to multiplication
             logger.info("Successfully encoded data.")
             return encoded_result
 
@@ -182,7 +182,7 @@ class VSNSL:
 
         if isinstance(data, str):
             try:
-                multiplied_data = str(int(data) * self.encryptionLock)
+                multiplied_data = str(int(data) // self.encryptionLock)  # Change to division
                 logger.debug(f"Multiplied data: {multiplied_data}")
                 pair_length = len(str(self.charset_offset))
                 pairs = []
@@ -338,5 +338,67 @@ class VSNSL:
                 decoded_list.append(None)  # Append None or handle the error as needed
         return decoded_list
         
-    
+    def mltEncode(self, encryptionLocks: List[int], stringToEncode: str):
+        """
+        .. versionadded:: v0.1.3
+            Was added to allow encoding of data using multiple encryption locks.
 
+        Encodes a string using a series of encryption locks in sequence.
+
+        This method takes a list of encryption locks and encodes the provided string with each lock in the order they are given. The output of each encoding becomes the input for the next.
+
+        Args:
+            encryptionLocks (List[int]): A list of encryption locks to use for encoding.
+            stringToEncode (str): The string to encode.
+
+        Returns:
+            str: The final encoded string after applying all encryption locks.
+
+        Usage:
+            .. code-block:: python
+
+                vsnsl = VSNSL(1)
+                encoded_data = vsnsl.mltEncode([2, 3], "abc")
+                print(encoded_data)  # Encodes "abc" first with lock 2, then with lock 3.
+        """
+        firstEncryptionLock = self.encryptionLock
+        data = stringToEncode
+        for item in encryptionLocks:
+            self.encryptionLock = item
+            encoded_value = self.encodeData(data)
+            data = encoded_value
+        self.encryptionLock = firstEncryptionLock
+        return data
+    
+    def mltDecode(self, encryptionLocks: List[int], stringToDecode: str):
+        """
+        .. versionadded:: v0.1.3
+            Was added to allow decoding of data using multiple encryption locks.
+
+        Decodes a string using a series of encryption locks in sequence.
+
+        This method takes a list of encryption locks and decodes the provided string with each lock in the order they are given. The output of each decoding becomes the input for the next.
+
+        Args:
+            encryptionLocks (List[int]): A list of encryption locks to use for decoding.
+            stringToDecode (str): The string to decode.
+
+        Returns:
+            str: The final decoded string after applying all encryption locks.
+
+        Usage:
+            .. code-block:: python
+
+                vsnsl = VSNSL(1)
+                decoded_data = vsnsl.mltDecode([2, 3], "encoded_string")
+                print(decoded_data)  # Decodes the string first with lock 2, then with lock 3.
+        """
+        firstEncryptionLock = self.encryptionLock
+        data = stringToDecode
+        encryptionLocks.reverse()  # Reverse the list in place
+        for item in encryptionLocks:  # Iterate over the reversed list
+            self.encryptionLock = item
+            decoded_value = self.decodeData(data)
+            data = decoded_value
+        self.encryptionLock = firstEncryptionLock
+        return data
