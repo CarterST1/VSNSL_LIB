@@ -60,6 +60,7 @@ print(f"Decoded Batch: {decoded_list}")
 
 - **v0.1.1**: Initial release with basic encoding and decoding features.
 - **v0.1.2**: Added batch processing methods for encoding and decoding lists of strings.
+- **v0.1.3**: This update introduces mltEncode and mltDecode for streamlined multi-encoding and decoding on a single line, alongside improvements to data encoding/decoding processes to reduce errors.
 
 ## Contributing
 
