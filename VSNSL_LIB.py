@@ -12,7 +12,8 @@ logger.setLevel(logging.INFO)  # Explicitly set the logger level to INFO
 logging.basicConfig(
     filename=f'{Path(__file__).parent}/resources/logs/activity.log',
     level=logging.INFO,  # This should already be set to INFO
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    encoding="utf-8"
 )
 
 class VSNSL:
@@ -47,23 +48,34 @@ class VSNSL:
                 vsnsl = VSNSL(1)
         """
         logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
-        charsetPath = Path(f'{Path(__file__).parent}/resources/charset.json')
-        if not charsetPath.exists():
-            logger.error("Charset file not found.")
-            raise Exception("Charset file not found. Make sure you installed it correctly and run the script again.")
+        charsetPath = list(Path(f'{Path(__file__).parent}/resources/charsets').rglob('*'))
+
+        self.letters = {}
+
+        if not charsetPath:
+            logger.error("Charset files not found.")
+            raise Exception("Charset files not found. Make sure you installed it correctly and run the script again.")
         else:
-            self.letters = json.loads(charsetPath.read_text())
-            logger.info("Charset loaded successfully.")
+
+            for path in charsetPath:
+                content: dict = json.loads(path.read_text(encoding='utf-8'))
+                if content:
+                    for key, value in content.items():
+                        if value in self.letters.values():
+                            logger.error(f"Trying to override a already exsiting char mapping value. Trying to replace \"{self.get_key(self.letters, value)}\" ({value}) with \"{key}\" ({value})")
+                        else:
+                            logger.debug(f"Value (\"{key}\") loaded from {path.name}")
+                            self.letters[key] = value
 
         self.encryptionLock = encryptionLock
-        logger.info(f"Encryption lock set to: {self.encryptionLock}")
+        logger.debug(f"Encryption lock set to: {self.encryptionLock}")
 
         self.charset_offset = 100
-        logger.info(f"Charset offset set to: {self.charset_offset}")
+        logger.debug(f"Charset offset set to: {self.charset_offset}")
 
         for char, num in self.letters.items():
             self.letters[char] = int(num) + self.charset_offset
-        logger.info("Character mapping initialized.")
+        logger.debug("Character mapping initialized.")
 
     def get_pairs(self, s: str, separator: int = 3) -> list:
         """
@@ -146,8 +158,11 @@ class VSNSL:
                 try:
                     returnText += str(self.letters[letter])
                     logger.debug(f"Encoded {letter} to {self.letters[letter]}")
-                except Exception as e:
-                    logger.exception("Exception during encoding")
+                except KeyError:
+                    logger.warning(f"Character '{letter}' not found in mapping.")
+            if returnText == '':
+                logger.error("No valid characters found for encoding.")
+                raise ValueError("No valid characters found for encoding.")
             # Ensure the encoded result is correctly adjusted by the encryption lock
             encoded_result = str(int(returnText) * self.encryptionLock)  # Change to multiplication
             logger.info("Successfully encoded data.")

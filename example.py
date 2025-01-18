@@ -1,5 +1,4 @@
-
-from .VSNSL_LIB import VSNSL  # Use relative import if in the same package
+from VSNSL_LIB import VSNSL  # Change to absolute import
 
 vsnsl: VSNSL = VSNSL(1)
 
