@@ -23,27 +23,27 @@ cd VSNSL_LIB
 Here's a quick example of how to use the VSNSL library:
 
 ```python
-from VSNSL import VSNSL
 
-# Initialize the VSNSL class with an encryption lock
-vsnsl = VSNSL(encryptionLock=12345)
+from .VSNSL_LIB import VSNSL  # Use relative import if in the same package
 
-# Encode a string
-encoded_data = vsnsl.encodeData("Hello, World!")
-print(f"Encoded: {encoded_data}")
+vsnsl: VSNSL = VSNSL(1)
 
-# Decode the encoded string
-decoded_data = vsnsl.decodeData(encoded_data)
-print(f"Decoded: {decoded_data}")
+print(vsnsl.encodeData("abc"))
+# Returns: "101102103"
 
-# Encode a batch of strings
-data_list = ["abc", "def", "ghi"]
-encoded_list = vsnsl.encodeBatch(data_list)
-print(f"Encoded Batch: {encoded_list}")
+print(vsnsl.decodeData("101102103"))
+# Returns: "abc"
 
-# Decode a batch of encoded strings
-decoded_list = vsnsl.decodeBatch(encoded_list)
-print(f"Decoded Batch: {decoded_list}")
+print(vsnsl.encodeBatch(["abc", "def", "ghi"]))
+# Returns: ["101102103", "104105106", "107108109"]
+
+print(vsnsl.decodeBatch(["101102103", "104105106", "107108109"]))
+# Returns: ["abc", "def", "ghi"]
+
+encryptedLocks = [1,2,3]
+encrypted = vsnsl.mltEncode(encryptedLocks, "hi")
+print(encrypted)
+print(vsnsl.mltDecode(encryptedLocks, encrypted))
 ```
 
 ## Configuration
