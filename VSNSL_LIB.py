@@ -390,7 +390,7 @@ class VSNSL:
             .. code-block:: python
 
                 vsnsl = VSNSL(1)
-                decoded_data = vsnsl.mltDecode([2, 3], "encoded_string")
+                decoded_data = vsnsl.mltDecode([1, 2], "387396399387396393387402381387396399387396393387402387")
                 print(decoded_data)  # Decodes the string first with lock 2, then with lock 3.
         """
         firstEncryptionLock = self.encryptionLock
