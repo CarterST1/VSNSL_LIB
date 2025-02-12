@@ -3,13 +3,3 @@
 *.log
 /.venv
 
-# Ignore Sphinx build output
-_build/
-_static/
-_templates/
-conf.py
-*.rst
-Makefile
-make.bat
-getLatestRelease.py
-update_usage.py
