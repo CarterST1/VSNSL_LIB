@@ -1,6 +1,6 @@
-from VSNSL_LIB import VSNSL  # Change to absolute import
+import libraries.VSNSL_LIB as VSNSL_LIB
 
-vsnsl: VSNSL = VSNSL(1)
+vsnsl: VSNSL_LIB.VSNSL = VSNSL_LIB.VSNSL(1)
 
 print(vsnsl.encodeData("abc"))
 # Returns: "101102103"
