@@ -58,12 +58,11 @@ class VSNSL:
         # Check if charset files were found
         if not charsetPath:
             logger.error("Charset files not found.")
-            raise Exception("Charset files not found. Make sure you installed it correctly and run the script again.")
+            raise FileNotFoundError("Charset files not found. Make sure you installed it correctly and run the script again.")
         else:
             # Load character mappings from each charset file
             for path in charsetPath:
-                content: dict = json.loads(path.read_text(encoding='utf-8'))
-                if content:
+                if content := json.loads(path.read_text(encoding='utf-8')):
                     for key, value in content.items():
                         # Check for duplicate values in the mapping
                         if value in self.letters.values():
@@ -110,9 +109,8 @@ class VSNSL:
         """
         pairs = []  # Initialize a list to hold the pairs
         
-        for i in range(0, len(s) - 1, separator):
-            pairs.append(s[i:i+separator])  # Append each chunk to the list
-            
+        pairs.extend(s[i:i+separator] for i in range(0, len(s) - 1, separator))
+        
         return pairs
 
     #---
@@ -138,11 +136,7 @@ class VSNSL:
                 key = VSNSL.get_key(VSNSL.letters, 101)
                 print(key) # Returns: "a"
         """
-        for key, value in dictObj.items():
-            if value == pitchfork:
-                return key  # Return the key if the value matches
-                
-        return None  # Return None if no match is found
+        return next((key for key, value in dictObj.items() if value == pitchfork), None)
 
     #---
     
@@ -167,9 +161,8 @@ class VSNSL:
                 encodedData = VSNSL.encodeData("abc")
                 print(encodedData) # Returns: "101102103"
         """
-        returnText = ''  # Initialize the return text
-        
         if isinstance(data, str):  # Check if the data is a string
+            returnText = ''  # Initialize the return text
             for letter in data:
                 try:
                     returnText += str(self.letters[letter])  # Encode each letter
@@ -210,25 +203,20 @@ class VSNSL:
                 print(decodedData) # Returns: "abc"
         """
         returnText = ''  # Initialize the return text
-        unfound_count = 0  # Counter for unfound values
-        threshold = 2  # Set a threshold for the number of unfound values
 
         logger.info(f"Starting decoding process for data: {data}")
 
+        unfound_count = 0  # Counter for unfound values
         if isinstance(data, str):  # Check if the data is a string
             try:
                 multiplied_data = str(int(data) // self.encryptionLock)  # Change to division
                 logger.debug(f"Multiplied data: {multiplied_data}")
                 pair_length = len(str(self.charset_offset))  # Determine the length of pairs based on charset offset
-                pairs = []  # Initialize a list to hold pairs
-                
-                for i in range(0, len(multiplied_data), pair_length):
-                    pairs.append(multiplied_data[i:i+pair_length])  # Append each pair to the list
-                    
+                pairs = [multiplied_data[i:i+pair_length] for i in range(0, len(multiplied_data), pair_length)]  # Create pairs
                 logger.debug(f"Pairs: {pairs}")
             except ValueError as e:
                 logger.error(f"Data format error: {e}")
-                raise ValueError("Decryption failed due to data format error.")  # Raise an error if data format is incorrect
+                raise ValueError("Decryption failed due to data format error.") from e
 
             for item in pairs:
                 try:
@@ -241,7 +229,9 @@ class VSNSL:
                         logger.warning(f"Value {item} not found in character mapping.")
                 except ValueError as e:
                     logger.error(f"Error converting pair to integer: {e}")
-                    raise ValueError("Decryption failed due to data conversion error.")  # Raise an error if conversion fails
+                    raise ValueError("Decryption failed due to data conversion error.") from e
+
+            threshold = 2  # Set a threshold for the number of unfound values
 
             if unfound_count > threshold:
                 logger.error(f"Too many unfound values ({unfound_count}). Possible issues: incorrect encryption lock, data corruption, or charset mismatch.")
@@ -278,17 +268,21 @@ class VSNSL:
                 print(convertedData) # Returns: "201202203"
         """
         logger.info(f"Converting data from {self.encryptionLock} to {newEncryptionLock}")
-        
+
         try:
-            oldEncryption = self.encryptionLock  # Store the current encryption lock
-            oldData = self.decodeData(data)  # Decode the data with the current lock
-            self.encryptionLock = newEncryptionLock  # Update to the new encryption lock
-            convertedData = self.encodeData(oldData)  # Encode the data with the new lock
-            self.encryptionLock = oldEncryption  # Restore the old encryption lock
-            return convertedData  # Return the converted data
+            return self._extracted_from_convertData_26(data, newEncryptionLock)
         except Exception as e:
             logger.exception("Exception during data conversion")
             raise e  # Raise the exception if any error occurs
+
+    # TODO Rename this here and in `convertData`
+    def _extracted_from_convertData_26(self, data, newEncryptionLock):
+        oldEncryption = self.encryptionLock  # Store the current encryption lock
+        oldData = self.decodeData(data)  # Decode the data with the current lock
+        self.encryptionLock = newEncryptionLock  # Update to the new encryption lock
+        convertedData = self.encodeData(oldData)  # Encode the data with the new lock
+        self.encryptionLock = oldEncryption  # Restore the old encryption lock
+        return convertedData  # Return the converted data
 
     #---
     
