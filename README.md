@@ -61,7 +61,7 @@ print(vsnsl.mltDecode(encryptedLocks, encrypted))
 - **v0.1.1**: Initial release with basic encoding and decoding features.
 - **v0.1.2**: Added batch processing methods for encoding and decoding lists of strings.
 - **v0.1.3**: This update introduces mltEncode and mltDecode for streamlined multi-encoding and decoding on a single line, alongside improvements to data encoding/decoding processes to reduce errors.
-- **v0.1.4**: This update features major refactoring.
+- **v0.1.4**: This update will features major refactoring.
 
 ## Contributing
 
