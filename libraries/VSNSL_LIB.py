@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 import sys
 from typing import List
+from .charset import Charset  # Ensure Charset is imported
 
 # Get the logger for the current module
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ class VSNSL:
     This class was developed for a science fair project, and it offers advantages such as extreme security.
 
     Attributes:
-        letters (dict): A dictionary mapping characters to numbers.
+        charset (Charset): An instance of the Charset class for managing character mappings.
         encryptionLock (int): The encryption lock to use for encoding and decoding.
 
     .. literalinclude:: example.py
@@ -50,37 +51,23 @@ class VSNSL:
         """
         logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
         
-        # Get all charset files from the specified directory
-        charsetPath = list(Path(f'{Path(__file__).parent}/resources/charsets').rglob('*'))
-
-        self.letters = {}  # Initialize the character mapping dictionary
-
-        # Check if charset files were found
-        if not charsetPath:
-            logger.error("Charset files not found.")
-            raise FileNotFoundError("Charset files not found. Make sure you installed it correctly and run the script again.")
-        else:
-            # Load character mappings from each charset file
-            for path in charsetPath:
-                if content := json.loads(path.read_text(encoding='utf-8')):
-                    for key, value in content.items():
-                        # Check for duplicate values in the mapping
-                        if value in self.letters.values():
-                            logger.error(f"Trying to override a already existing char mapping value. Trying to replace \"{self.get_key(self.letters, value)}\" ({value}) with \"{key}\" ({value})")
-                        else:
-                            logger.debug(f"Value (\"{key}\") loaded from {path.name}")
-                            self.letters[key] = value  # Add the mapping to the dictionary
-
+        self.charset = Charset()  # Initialize the Charset instance
         self.encryptionLock = encryptionLock  # Set the encryption lock
         logger.debug(f"Encryption lock set to: {self.encryptionLock}")
 
-        self.charset_offset = 100  # Set an offset for character mapping
-        logger.debug(f"Charset offset set to: {self.charset_offset}")
+        # Load character mappings from charset files
+        self.load_charsets()
 
-        # Adjust the character mapping values by the charset offset
-        for char, num in self.letters.items():
-            self.letters[char] = int(num) + self.charset_offset
-        logger.debug("Character mapping initialized.")
+    def load_charsets(self):
+        """Load character mappings from charset files into the Charset instance."""
+        charsetPath = list(Path(f'{Path(__file__).parent}/resources/charsets').rglob('*'))
+        
+        if not charsetPath:
+            logger.error("Charset files not found.")
+            raise FileNotFoundError("Charset files not found. Make sure you installed it correctly and run the script again.")
+        
+        for path in charsetPath:
+            self.charset.load_charset(path)
 
     #---
     
@@ -155,18 +142,16 @@ class VSNSL:
         Returns:
             str: The encoded data as a string.
         
-        Usage:
-            .. code-block:: python
-
-                encodedData = VSNSL.encodeData("abc")
-                print(encodedData) # Returns: "101102103"
+        Raises:
+            ValueError: If no valid characters are found for encoding.
         """
         if isinstance(data, str):  # Check if the data is a string
             returnText = ''  # Initialize the return text
             for letter in data:
                 try:
-                    returnText += str(self.letters[letter])  # Encode each letter
-                    logger.debug(f"Encoded {letter} to {self.letters[letter]}")
+                    # Use the Charset instance to encode each letter
+                    returnText += str(self.charset.charset[letter])  # Encode each letter
+                    logger.debug(f"Encoded {letter} to {self.charset.charset[letter]}")
                 except KeyError:
                     logger.warning(f"Character '{letter}' not found in mapping.")  # Log a warning if the character is not found
                     
@@ -196,11 +181,8 @@ class VSNSL:
         Returns:
             str: The decoded data as a string.
         
-        Usage:
-            .. code-block:: python
-
-                decodedData = VSNSL.decodeData("101102103")
-                print(decodedData) # Returns: "abc"
+        Raises:
+            ValueError: If decryption fails due to data format error or too many unfound values.
         """
         returnText = ''  # Initialize the return text
 
@@ -211,7 +193,7 @@ class VSNSL:
             try:
                 multiplied_data = str(int(data) // self.encryptionLock)  # Change to division
                 logger.debug(f"Multiplied data: {multiplied_data}")
-                pair_length = len(str(self.charset_offset))  # Determine the length of pairs based on charset offset
+                pair_length = 3
                 pairs = [multiplied_data[i:i+pair_length] for i in range(0, len(multiplied_data), pair_length)]  # Create pairs
                 logger.debug(f"Pairs: {pairs}")
             except ValueError as e:
@@ -220,7 +202,7 @@ class VSNSL:
 
             for item in pairs:
                 try:
-                    key = self.get_key(self.letters, int(item))  # Get the key for each item
+                    key = self.get_key(self.charset.charset, int(item))
                     if key is not None:
                         returnText += key  # Append the decoded character to returnText
                         logger.debug(f"Decoded {item} to {key}")
@@ -292,7 +274,7 @@ class VSNSL:
             Was added to make encoding batches easier.
 
         .. note::
-            Instances of None will be returned if an error occurs during encoding (If character isn't found in :attr:`self.letters`).
+            Instances of None will be returned if an error occurs during encoding (If character isn't found in :attr:`self.charset.charset`).
 
             Example:
                 .. code-block:: python
