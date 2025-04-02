@@ -17,6 +17,7 @@ logging.basicConfig(
     encoding="utf-8"
 )
 
+BASE_CHARSET = Charset()
 
 class VSNSL:
     """
@@ -33,7 +34,7 @@ class VSNSL:
     .. literalinclude:: example.py
     """
 
-    def __init__(self, encryptionLock: int):
+    def __init__(self, encryptionLock: int, charset: Charset = None):
         """
         .. versionadded:: v0.1.1
 
@@ -51,8 +52,8 @@ class VSNSL:
         """
         logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
         
-        self.charset = Charset()  # Initialize the Charset instance
-        self.encryptionLock = encryptionLock  # Set the encryption lock
+        self.charset = charset if charset else BASE_CHARSET
+        self.encryptionLock = encryptionLock if encryptionLock != 0 else 1  # Set the encryption lock
         logger.debug(f"Encryption lock set to: {self.encryptionLock}")
 
         # Load character mappings from charset files
