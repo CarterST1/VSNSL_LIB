@@ -166,6 +166,12 @@ class VSNSL:
             return encoded_result  # Return the encoded result
 
     #---
+
+    def encode(self, data: object) -> str:
+        """An alternative of encodeData"""
+        return self.encodeData(data)
+
+    #---
     
     def decodeData(self, data: str) -> str:
         """
@@ -225,6 +231,12 @@ class VSNSL:
 
         logger.info("Successfully decoded data.")
         return returnText  # Return the decoded text
+
+    #---
+
+    def decode(self, data: object) -> str:
+        """An alternative of decodeData"""
+        return self.decodeData(data)
 
     #---
     
