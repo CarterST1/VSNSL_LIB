@@ -49,7 +49,7 @@ def test_decode_batch():
 def test_m_encode():
     vsnsl = VSNSL(1)
     encoded_data = vsnsl.mEncode([2, 3], "abc")
-    assert encoded_data == EXPECTED_MLT_ENCODED_DATA
+    assert encoded_data == EXPECTED_M_ENCODED_DATA
 
 def test_m_decode():
     vsnsl = VSNSL(1)
