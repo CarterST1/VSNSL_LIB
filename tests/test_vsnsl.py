@@ -65,3 +65,20 @@ def test_alt_decode_data_abc():
     vsnsl = VSNSL(1)
     data = vsnsl.decode("101102103")
     assert data == "abc"
+
+def test_vsnsl_facade():
+    vsnsl = VSNSL(1)
+    assert vsnsl.encodeData("abc") == "101102103"
+    assert vsnsl.decodeData("101102103") == "abc"
+    assert vsnsl.encryptionLock == 1
+
+def test_vsnsl_batch_processing():
+    vsnsl = VSNSL(1)
+    results = vsnsl.encodeBatch(["abc", "abc"])
+    assert results == ["101102103", "101102103"]
+
+def test_vsnsl_multi_lock():
+    vsnsl = VSNSL(1)
+    encoded = vsnsl.mEncode([2, 3], "abc")
+    decoded = vsnsl.mDecode([3, 2], encoded)
+    assert decoded == "abc"
