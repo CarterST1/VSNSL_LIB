@@ -142,3 +142,5 @@ class Charset:
                         if key not in self.charset:
                             self.charset[key] = value
         return self
+    
+BASE_CHARSET = Charset()
