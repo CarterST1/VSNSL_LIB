@@ -376,7 +376,7 @@ class VSNSL:
 
     #---
     
-    def mltEncode(self, encryptionLocks: List[int], stringToEncode: str):
+    def mEncode(self, encryptionLocks: List[int], stringToEncode: str):
         """
         .. versionadded:: v0.1.3
             Was added to allow encoding of data using multiple encryption locks.
@@ -396,7 +396,7 @@ class VSNSL:
             .. code-block:: python
 
                 vsnsl = VSNSL(1)
-                encoded_data = vsnsl.mltEncode([2, 3], "abc")
+                encoded_data = vsnsl.mEncode([2, 3], "abc")
                 print(encoded_data)  # Encodes "abc" first with lock 2, then with lock 3.
         """
         firstEncryptionLock = self.encryptionLock  # Store the initial encryption lock
@@ -412,7 +412,7 @@ class VSNSL:
 
     #---
     
-    def mltDecode(self, encryptionLocks: List[int], stringToDecode: str):
+    def mDecode(self, encryptionLocks: List[int], stringToDecode: str):
         """
         .. versionadded:: v0.1.3
             Was added to allow decoding of data using multiple encryption locks.
@@ -432,7 +432,7 @@ class VSNSL:
             .. code-block:: python
 
                 vsnsl = VSNSL(1)
-                decoded_data = vsnsl.mltDecode([1, 2], "387396399387396393387402381387396399387396393387402387")
+                decoded_data = vsnsl.mDecode([1, 2], "387396399387396393387402381387396399387396393387402387")
                 print(decoded_data)  # Decodes the string first with lock 2, then with lock 3.
         """
         firstEncryptionLock = self.encryptionLock  # Store the initial encryption lock
