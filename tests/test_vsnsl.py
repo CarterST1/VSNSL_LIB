@@ -8,7 +8,7 @@ EXPECTED_ENCODED_DATA = "101102103"
 EXPECTED_CONVERTED_DATA = "202204206"  # Assuming the encoding with lock 2 gives this result
 EXPECTED_BATCH_ENCODED_LIST = [EXPECTED_ENCODED_DATA, EXPECTED_ENCODED_DATA]  # Assuming these are the expected results
 EXPECTED_BATCH_DECODED_LIST = ["abc", "abc"]  # Assuming these are the expected results
-EXPECTED_MLT_ENCODED_DATA = "387381387387381393387381399"  # Replace with the expected result after encoding
+EXPECTED_M_ENCODED_DATA = "387381387387381393387381399"  # Replace with the expected result after encoding
 
 def test_encryptionLock_default_value():
     vsnsl = VSNSL(0)
@@ -46,14 +46,14 @@ def test_decode_batch():
     decoded_list = vsnsl.decodeBatch(encoded_list)
     assert decoded_list == EXPECTED_BATCH_DECODED_LIST
 
-def test_mlt_encode():
+def test_m_encode():
     vsnsl = VSNSL(1)
-    encoded_data = vsnsl.mltEncode([2, 3], "abc")
+    encoded_data = vsnsl.mEncode([2, 3], "abc")
     assert encoded_data == EXPECTED_MLT_ENCODED_DATA
 
-def test_mlt_decode():
+def test_m_decode():
     vsnsl = VSNSL(1)
-    decoded_data = vsnsl.mltDecode([2, 3], "387381387387381393387381399")
+    decoded_data = vsnsl.mDecode([2, 3], "387381387387381393387381399")
     assert decoded_data == "abc"  # Replace with the expected original value
 
 def test_alt_encode_data_abc():
