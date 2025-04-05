@@ -55,3 +55,13 @@ def test_mlt_decode():
     vsnsl = VSNSL(1)
     decoded_data = vsnsl.mltDecode([2, 3], "387381387387381393387381399")
     assert decoded_data == "abc"  # Replace with the expected original value
+
+def test_alt_encode_data_abc():
+    vsnsl = VSNSL(1)
+    data = vsnsl.encode("abc")
+    assert data == EXPECTED_ENCODED_DATA
+
+def test_alt_decode_data_abc():
+    vsnsl = VSNSL(1)
+    data = vsnsl.decode("101102103")
+    assert data == "abc"
