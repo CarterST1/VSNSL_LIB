@@ -48,38 +48,44 @@ class Charset:
         else:
             return 0
 
-    def load_charset(self, path: Path) -> int:
-        """Load charset data from a specified file path or JSON string.
+    def load_charset(self, obj: Union[Path, dict]) -> int:
+        """Load charset data from a file path or dictionary.
 
         Args:
-            path (Path): The path to the JSON file containing charset data.
+            obj (Union[Path, dict]): The path to the JSON file or a dictionary containing charset data.
 
         Returns:
             int: 1 if loading was successful, 0 otherwise.
         """
-        if path and path.is_file():
+        path_json = None
+        
+        if isinstance(obj, dict):
+            path_json = obj
+        elif obj and obj.is_file():
             try:
-                path_json: dict = json.loads(path.read_text())
+                path_json = json.loads(obj.read_text())
             except json.JSONDecodeError as e:
                 print(f"JSON decode operation failed. Err: {e.msg}")
                 return 0
-            else:
-                if not path_json.get("mapping", None):
-                    raise Exception("Mapping must be provided")
-                author_default = getpass.getuser() if sys.platform == "win32" else "User"
-                now = datetime.now()
-                self.author = path_json.get("author", author_default)
-                self.timestamp = path_json.get("timestamp", now.timestamp())
-                
-                # Load the mapping and adjust values
-                self.charset = {}
-                for key, value in path_json["mapping"].items():
-                    if isinstance(value, int):  # Ensure value is an integer
-                        value += 100  # Adjust the value
-                    self.charset[key] = value  # Store the adjusted value
-
-                return 1
-        return 0  # Return failure status if no path is provided
+        
+        if path_json:
+            if not path_json.get("mapping"):
+                raise Exception("Mapping must be provided")
+            
+            author_default = getpass.getuser() if sys.platform == "win32" else "User"
+            now = datetime.now()
+            self.author = path_json.get("author", author_default)
+            self.timestamp = path_json.get("timestamp", now.timestamp())
+            
+            self.charset = {}
+            for key, value in path_json["mapping"].items():
+                if isinstance(value, int):
+                    value += 100
+                self.charset[key] = value
+            
+            return 1
+        
+        return 0
 
     def display_charset(self) -> None:
         """Display the current charset in a readable format."""
