@@ -1,6 +1,7 @@
 from typing import Union, Any
 from pathlib import Path
 import json, getpass, sys
+from jsonschema import validate, ValidationError
 from datetime import datetime
 
 class Charset:
@@ -10,6 +11,21 @@ class Charset:
         self.timestamp = 0
         self.charset = {}  # Initialize an empty charset dictionary
         self.priority = 1
+
+        self.CHARSET_SCHEMA = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "title": "Charset File",
+            "type": "object",
+            "properties": {
+                "author": { "type": "string" },
+                "timestamp": { "type": "number" },
+                "mapping": {
+                    "type": "object",
+                    "additionalProperties": { "type": "integer" }
+                }
+            },
+            "required": ["author", "timestamp", "mapping"]
+        }
 
     def _get_max_value(self) -> int:
         """Helper function to get the maximum integer value in the charset."""
@@ -69,8 +85,11 @@ class Charset:
                 return 0
         
         if path_json:
-            if not path_json.get("mapping"):
-                raise Exception("Mapping must be provided")
+            try:
+                validate(instance=path_json, schema=self.CHARSET_SCHEMA)
+            except ValidationError as e:
+                print(f"Schema validation failed: {e.message}")
+                return 0
             
             author_default = getpass.getuser() if sys.platform == "win32" else "User"
             now = datetime.now()
