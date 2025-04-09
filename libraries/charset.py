@@ -47,6 +47,7 @@ class Charset:
             self.charset[keyName] = max_value + 1 if max_value != -1 else 0
             return 1
         else:
+            print(f"Invalid key type: {type(keyName).__name__}, expected str")
             return 0
 
     def rmvKey(self, keyName: str) -> int:
@@ -83,28 +84,35 @@ class Charset:
             except json.JSONDecodeError as e:
                 print(f"JSON decode operation failed. Err: {e.msg}")
                 return 0
+        elif isinstance(obj, Path):
+            print(f"Path does not exist or is not a file: {obj}")
+            return 0
         
-        if path_json:
-            try:
-                validate(instance=path_json, schema=self.CHARSET_SCHEMA)
-            except ValidationError as e:
-                print(f"Schema validation failed: {e.message}")
+        if not path_json or not isinstance(path_json, dict):
+            print("Invalid or empty charset data")
+            return 0
+        
+        try:
+            validate(instance=path_json, schema=self.CHARSET_SCHEMA)
+        except ValidationError as e:
+            print(f"Schema validation failed: {e.message}")
+            return 0
+        
+        author_default = getpass.getuser() if sys.platform == "win32" else "User"
+        now = datetime.now()
+        self.author = path_json.get("author", author_default)
+        self.timestamp = path_json.get("timestamp", now.timestamp())
+        
+        self.charset = {}
+        for key, value in path_json["mapping"].items():
+            if not isinstance(key, str):
+                print(f"Invalid key type in mapping: {type(key).__name__}")
                 return 0
-            
-            author_default = getpass.getuser() if sys.platform == "win32" else "User"
-            now = datetime.now()
-            self.author = path_json.get("author", author_default)
-            self.timestamp = path_json.get("timestamp", now.timestamp())
-            
-            self.charset = {}
-            for key, value in path_json["mapping"].items():
-                if isinstance(value, int):
-                    value += 100
-                self.charset[key] = value
-            
-            return 1
+            if isinstance(value, int):
+                value += 100
+            self.charset[key] = value
         
-        return 0
+        return 1
 
     def display_charset(self) -> None:
         """Display the current charset in a readable format."""

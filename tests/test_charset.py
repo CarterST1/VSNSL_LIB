@@ -17,3 +17,8 @@ def test_charset_not_default():
     assert BLANK_CHARSET.timestamp != BUILT_CHARSET.timestamp
     assert BLANK_CHARSET.charset != BUILT_CHARSET.charset
     assert BLANK_CHARSET.priority != BUILT_CHARSET.priority
+
+def test_charset_addkey_invalid_type():
+    charset = Charset()
+    assert charset.addKey(123) == 0
+    assert "123" not in charset.get_charset()
