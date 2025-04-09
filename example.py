@@ -15,6 +15,6 @@ print(vsnsl.decodeBatch(["101102103", "104105106", "107108109"]))
 # Returns: ["abc", "def", "ghi"]
 
 encryptedLocks = [1,2,3]
-encrypted = vsnsl.mltEncode(encryptedLocks, "hi")
+encrypted = vsnsl.mEncode(encryptedLocks, "hi")
 print(encrypted)
-print(vsnsl.mltDecode(encryptedLocks, encrypted))
+print(vsnsl.mDecode(encryptedLocks, encrypted))

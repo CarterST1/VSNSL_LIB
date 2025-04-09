@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 from typing import List
 from .charset import Charset  # Ensure Charset is imported
+from .utilities.logger import vsnsl_logger as logger
 
 # Configure logging
 logging.basicConfig(
@@ -47,13 +48,11 @@ class VSNSL:
                 vsnsl = VSNSL(1)
         """
 
-        self.logger = logging.getLogger(__name__)
-
-        self.logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
+        logger.info(f"Initializing {self.__class__.__name__} class ({hex(id(self))})")
         
         self.charset = charset if charset else BASE_CHARSET
         self.encryptionLock = encryptionLock if encryptionLock != 0 else 1  # Set the encryption lock
-        self.logger.debug(f"Encryption lock set to: {self.encryptionLock}")
+        logger.debug(f"Encryption lock set to: {self.encryptionLock}")
 
         # Load character mappings from charset files
         self.load_charsets()
@@ -63,7 +62,7 @@ class VSNSL:
         charsetPath = list(Path(f'{Path(__file__).parent}/resources/charsets').rglob('*'))
         
         if not charsetPath:
-            self.logger.error("Charset files not found.")
+            logger.error("Charset files not found.")
             raise FileNotFoundError("Charset files not found. Make sure you installed it correctly and run the script again.")
         
         for path in charsetPath:
@@ -145,23 +144,24 @@ class VSNSL:
         Raises:
             ValueError: If no valid characters are found for encoding.
         """
+        logger.debug(f"Starting encoding of data: {data}")
         if isinstance(data, str):  # Check if the data is a string
             returnText = ''  # Initialize the return text
             for letter in data:
                 try:
                     # Use the Charset instance to encode each letter
                     returnText += str(self.charset.charset[letter])  # Encode each letter
-                    self.logger.debug(f"Encoded {letter} to {self.charset.charset[letter]}")
+                    logger.debug(f"Encoded {letter} to {self.charset.charset[letter]}")
                 except KeyError:
-                    self.logger.warning(f"Character '{letter}' not found in mapping.")  # Log a warning if the character is not found
+                    logger.warning(f"Character '{letter}' not found in mapping.")  # Log a warning if the character is not found
                     
             if returnText == '':
-                self.logger.error("No valid characters found for encoding.")
+                logger.error("No valid characters found for encoding.")
                 raise ValueError("No valid characters found for encoding.")  # Raise an error if no valid characters were found
                 
             # Ensure the encoded result is correctly adjusted by the encryption lock
             encoded_result = str(int(returnText) * self.encryptionLock)  # Change to multiplication
-            self.logger.info("Successfully encoded data.")
+            logger.info("Encoding completed successfully")
             return encoded_result  # Return the encoded result
 
     #---
@@ -192,18 +192,18 @@ class VSNSL:
         """
         returnText = ''  # Initialize the return text
 
-        self.logger.info(f"Starting decoding process for data: {data}")
+        logger.info(f"Starting decoding process for data: {data}")
 
         unfound_count = 0  # Counter for unfound values
         if isinstance(data, str):  # Check if the data is a string
             try:
                 multiplied_data = str(int(data) // self.encryptionLock)  # Change to division
-                self.logger.debug(f"Multiplied data: {multiplied_data}")
+                logger.debug(f"Multiplied data: {multiplied_data}")
                 pair_length = 3
                 pairs = [multiplied_data[i:i+pair_length] for i in range(0, len(multiplied_data), pair_length)]  # Create pairs
-                self.logger.debug(f"Pairs: {pairs}")
+                logger.debug(f"Pairs: {pairs}")
             except ValueError as e:
-                self.logger.error(f"Data format error: {e}")
+                logger.error(f"Data format error: {e}")
                 raise ValueError("Decryption failed due to data format error.") from e
 
             for item in pairs:
@@ -211,24 +211,24 @@ class VSNSL:
                     key = self.get_key(self.charset.charset, int(item))
                     if key is not None:
                         returnText += key  # Append the decoded character to returnText
-                        self.logger.debug(f"Decoded {item} to {key}")
+                        logger.debug(f"Decoded {item} to {key}")
                     else:
                         unfound_count += 1  # Increment unfound count if key is None
-                        self.logger.warning(f"Value {item} not found in character mapping.")
+                        logger.warning(f"Value {item} not found in character mapping.")
                 except ValueError as e:
-                    self.logger.error(f"Error converting pair to integer: {e}")
+                    logger.error(f"Error converting pair to integer: {e}")
                     raise ValueError("Decryption failed due to data conversion error.") from e
 
             threshold = 2  # Set a threshold for the number of unfound values
 
             if unfound_count > threshold:
-                self.logger.error(f"Too many unfound values ({unfound_count}). Possible issues: incorrect encryption lock, data corruption, or charset mismatch.")
+                logger.error(f"Too many unfound values ({unfound_count}). Possible issues: incorrect encryption lock, data corruption, or charset mismatch.")
                 raise ValueError("Decryption failed due to too many unfound values. Please check the encryption lock.")
 
         if unfound_count > 0:
-            self.logger.warning(f"{unfound_count} values not found in character mapping. This may indicate an incorrect encryption lock.")
+            logger.warning(f"{unfound_count} values not found in character mapping. This may indicate an incorrect encryption lock.")
 
-        self.logger.info("Successfully decoded data.")
+        logger.info("Successfully decoded data.")
         return returnText  # Return the decoded text
 
     #---
@@ -261,12 +261,12 @@ class VSNSL:
                 convertedData = VSNSL.convertData(2, "101102103")
                 print(convertedData) # Returns: "201202203"
         """
-        self.logger.info(f"Converting data from {self.encryptionLock} to {newEncryptionLock}")
+        logger.info(f"Converting data from {self.encryptionLock} to {newEncryptionLock}")
 
         try:
             return self._extracted_from_convertData_26(data, newEncryptionLock)
         except Exception as e:
-            self.logger.exception("Exception during data conversion")
+            logger.exception("Exception during data conversion")
             raise e  # Raise the exception if any error occurs
 
     # TODO Rename this here and in `convertData`
@@ -321,7 +321,7 @@ class VSNSL:
             try:
                 encoded_list.append(self.encodeData(data))  # Encode each data item and append to the list
             except Exception as e:
-                self.logger.error(f"Failed to encode data: {data}. Error: {e}")
+                logger.error(f"Failed to encode data: {data}. Error: {e}")
                 encoded_list.append(None)  # Append None if encoding fails
                 
         return encoded_list  # Return the list of encoded results
@@ -369,7 +369,7 @@ class VSNSL:
             try:
                 decoded_list.append(self.decodeData(encoded))  # Decode each encoded item and append to the list
             except Exception as e:
-                self.logger.error(f"Failed to decode data: {encoded}. Error: {e}")
+                logger.error(f"Failed to decode data: {encoded}. Error: {e}")
                 decoded_list.append(None)  # Append None if decoding fails
                 
         return decoded_list  # Return the list of decoded results
