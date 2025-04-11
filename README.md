@@ -1,71 +1,87 @@
 # VSNSL - A Simple Encoding and Decoding Library
 
-VSNSL (stands for Very Simple Number Storage Language) is a Python library designed to encode and decode data using a character mapping dictionary. It provides a simple interface for transforming strings into encoded data and vice versa, using a specified encryption lock.
+VSNSL (Very Simple Number Storage Language) is a Python library for encoding and decoding data using a character mapping dictionary. It provides an intuitive interface for transforming strings into encoded data and vice versa, with support for encryption locks and batch processing.
 
 ## Features
 
 - **Encoding**: Convert strings into encoded data using a character mapping.
 - **Decoding**: Revert encoded data back to its original string form.
 - **Batch Processing**: Encode and decode lists of strings in batch.
-- **Logging**: Comprehensive logging for tracking the encoding and decoding processes.
+- **Multi-Lock Encoding**: Support for multi-lock encoding and decoding for added security.
+- **Logging**: Comprehensive logging for tracking encoding and decoding processes.
 
 ## Installation
 
-To use VSNSL, clone the repository:
+To get started with VSNSL, clone the repository and navigate to the project directory:
 
 ```bash
 git clone https://github.com/CarterST1/VSNSL_LIB.git
 cd VSNSL_LIB
 ```
 
+Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Usage
 
-Here's a quick example of how to use the VSNSL library:
+Here’s a quick example of how to use the VSNSL library:
 
 ```python
+from libraries.VSNSL_LIB import VSNSL
 
-from .VSNSL_LIB import VSNSL  # Use relative import if in the same package
+# Initialize the VSNSL object with an encryption lock
+vsnsl = VSNSL(1)
 
-vsnsl: VSNSL = VSNSL(1)
+# Encoding and decoding a single string
+encoded = vsnsl.encodeData("abc")
+print(encoded)  # Output: "101102103"
 
-print(vsnsl.encodeData("abc"))
-# Returns: "101102103"
+decoded = vsnsl.decodeData("101102103")
+print(decoded)  # Output: "abc"
 
-print(vsnsl.decodeData("101102103"))
-# Returns: "abc"
+# Batch encoding and decoding
+encoded_batch = vsnsl.encodeBatch(["abc", "def", "ghi"])
+print(encoded_batch)  # Output: ["101102103", "104105106", "107108109"]
 
-print(vsnsl.encodeBatch(["abc", "def", "ghi"]))
-# Returns: ["101102103", "104105106", "107108109"]
+decoded_batch = vsnsl.decodeBatch(["101102103", "104105106", "107108109"])
+print(decoded_batch)  # Output: ["abc", "def", "ghi"]
 
-print(vsnsl.decodeBatch(["101102103", "104105106", "107108109"]))
-# Returns: ["abc", "def", "ghi"]
+# Multi-lock encoding and decoding
+encryption_locks = [1, 2, 3]
+mlt_encoded = vsnsl.mEncode(encryption_locks, "hi")
+print(mlt_encoded)
 
-encryptedLocks = [1,2,3]
-encrypted = vsnsl.mEncode(encryptedLocks, "hi")
-print(encrypted)
-print(vsnsl.mDecode(encryptedLocks, encrypted))
+mlt_decoded = vsnsl.mDecode(encryption_locks, mlt_encoded)
+print(mlt_decoded)  # Output: "hi"
 ```
 
 ## Configuration
 
-- **Charset File**: Ensure that the `charset.json` file is located in the `resources` directory. This file contains the character mapping used for encoding and decoding.
-- **Logging**: Logs are stored in `resources/logs/activity.log`. You can adjust the logging level in the `VSNSL.py` file.
+- **Charset File**: Ensure the `charset.json` file is located in the `resources/charsets` directory. This file contains the character mapping used for encoding and decoding.
+- **Logging**: Logs are stored in `resources/logs/activity.log`. You can adjust the logging level in the `VSNSL_LIB.py` file.
 
 ## Troubleshooting
 
-- **Charset File Not Found**: Ensure that the `charset.json` file is correctly placed in the `resources` directory.
-- **Decryption Errors**: If you encounter errors during decryption, check the encryption lock and ensure the data is not corrupted.
+- **Charset File Not Found**: Verify that the `charset.json` file is correctly placed in the `resources/charsets` directory.
+- **Decryption Errors**: Ensure the encryption lock is correct and the data is not corrupted.
 
 ## Changelog
 
 - **v0.1.1**: Initial release with basic encoding and decoding features.
 - **v0.1.2**: Added batch processing methods for encoding and decoding lists of strings.
-- **v0.1.3**: This update introduces mltEncode and mltDecode for streamlined multi-encoding and decoding on a single line, alongside improvements to data encoding/decoding processes to reduce errors.
-- **v0.1.4**: This update will features major refactoring.
+- **v0.1.3**: Introduced `mEncode` and `mDecode` for streamlined multi-lock encoding and decoding.
+- **v0.1.4**: Major refactoring for improved performance and maintainability.
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+Contributions are welcome! To contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Submit a pull request with a detailed description of your changes.
 
 ## License
 
@@ -73,4 +89,4 @@ This project is licensed under the MIT License. See the [LICENSE](license.md) fi
 
 ## Contact
 
-For questions or support, please open an issue on the GitHub repository.
+For questions or support, please open an issue on the [GitHub repository](https://github.com/CarterST1/VSNSL_LIB).
