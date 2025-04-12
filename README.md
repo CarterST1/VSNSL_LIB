@@ -60,7 +60,7 @@ print(mlt_decoded)  # Output: "hi"
 
 ## Configuration
 
-- **Charset File**: Ensure the `charset.json` file is located in the `resources/charsets` directory. This file contains the character mapping used for encoding and decoding.
+- **Charset File**: Ensure the `charset.json` and all other charset files are located in the `resources/charsets` directory. This file contains the character mapping used for encoding and decoding.
 - **Logging**: Logs are stored in `resources/logs/activity.log`. You can adjust the logging level in the `VSNSL_LIB.py` file.
 
 ## Troubleshooting
