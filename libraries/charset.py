@@ -6,6 +6,15 @@ from datetime import datetime
 from .utilities.logger import vsnsl_logger as logger
 
 class Charset:
+
+    """
+    Character mapping configuration handler for encoding operations.
+
+    .. versionadded:: v0.1.4
+        Provides character set management capabilities to support batch operations
+        and character mapping configuration.
+    """
+
     def __init__(self) -> None:
         """Initialize the Charset object with default values."""
         logger.debug("Initializing new Charset instance")

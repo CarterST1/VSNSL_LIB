@@ -57,15 +57,28 @@ class VSNSL:
         # Load character mappings from charset files
         self.load_charsets()
 
-    def load_charsets(self):
-        """Load character mappings from charset files into the Charset instance."""
-        charsetPath = list(Path(f'{Path(__file__).parent}/resources/charsets').rglob('*'))
-        
-        if not charsetPath:
+    def load_charsets(self, charsetPath: Path = None):
+        """
+        Load character mappings from charset files into the Charset instance.
+
+        Args:
+            charsetPath (Path, optional): The path to the charset directory. If not provided, 
+                                          the default path will be used.
+        """
+        if charsetPath is None:
+            # Use the default path if no path is provided
+            charsetPath = Path(f'{Path(__file__).parent}/resources/charsets')
+
+        if not charsetPath.exists() or not charsetPath.is_dir():
             logger.error("Charset files not found.")
             raise FileNotFoundError("Charset files not found. Make sure you installed it correctly and run the script again.")
-        
-        for path in charsetPath:
+
+        charsetPaths = list(charsetPath.rglob('*'))
+        if not charsetPaths:
+            logger.error("No charset files found in the directory.")
+            raise FileNotFoundError("No charset files found in the directory.")
+
+        for path in charsetPaths:
             self.charset.load_charset(path)
 
     #---

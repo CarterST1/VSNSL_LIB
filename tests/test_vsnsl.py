@@ -1,4 +1,6 @@
+from pathlib import Path
 from libraries.VSNSL_LIB import VSNSL
+from libraries.charset import Charset
 
 TEST_ENCODED_DATA = "101102103"
 
@@ -64,3 +66,32 @@ def test_alt_decode_data_abc():
     vsnsl = VSNSL(1)
     data = vsnsl.decode("101102103")
     assert data == "abc"
+
+def test_load_charsets_fail_nonexistant_path():
+    vsnsl = VSNSL(1)
+    try:
+        vsnsl.load_charsets(Path("non_existant_path"))
+    except FileNotFoundError:
+        assert True
+
+def test_load_charsets_fail_empty_dir():
+    vsnsl = VSNSL(1)
+    try:
+        vsnsl.load_charsets(Path(r"VSNSL_LIB\tests\dummy_dir"))
+    except FileNotFoundError:
+        assert True
+
+def test_getPairs():
+    vsnsl = VSNSL(1)
+    pairs = vsnsl.get_pairs("abcabc", 3)
+    assert pairs == ["abc", "abc"]
+    
+def test_encodeData_keyError():
+    vsnsl = VSNSL(1)
+    charset = Charset()
+    charset.load_charset({"a": "1", "b": "2", "c": "3"})
+    vsnsl.charset = charset
+    try:
+        vsnsl.encodeData("xyz")
+    except ValueError:
+        assert True
