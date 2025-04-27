@@ -1,4 +1,3 @@
-import pytest
 from libraries.VSNSL_LIB import VSNSL
 
 TEST_ENCODED_DATA = "101102103"

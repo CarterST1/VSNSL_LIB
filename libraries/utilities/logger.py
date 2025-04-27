@@ -52,15 +52,27 @@ class Logger:
         self._initialized = True
         self.logger.info("[logger] Logger initialized successfully.")
 
-    def set_file_formatter(self, fmt: str):
-        """Set custom format for file logs"""
-        self.file_formatter = logging.Formatter(fmt)
-        self.file_handler.setFormatter(self.file_formatter)
+    def set_file_formatter(self, fmt: str) -> bool:
+        """Set custom format for file logs and signal success"""
+        try:
+            self.file_formatter = logging.Formatter(fmt)
+            self.file_handler.setFormatter(self.file_formatter)
+            self.logger.info("[logger] File formatter set successfully.")
+            return True
+        except Exception as e:
+            self.logger.error(f"[logger] Failed to set file formatter: {e}")
+            return False
 
     def set_console_formatter(self, fmt: str):
         """Set custom format for console logs"""
-        self.console_formatter = logging.Formatter(fmt)
-        self.console_handler.setFormatter(self.console_formatter)
+        try:
+            self.console_formatter = logging.Formatter(fmt)
+            self.console_handler.setFormatter(self.console_formatter)
+            self.logger.info("[logger] Console formatter set successfully.")
+            return True
+        except Exception as e:
+            self.logger.error(f"[logger] Failed to set console formatter: {e}")
+            return False
 
     def _get_caller_file(self):
         """Get the name of the file that called the logger"""
