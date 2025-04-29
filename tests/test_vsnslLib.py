@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 from libraries.VSNSL_LIB import VSNSL
 from libraries.charset import Charset
@@ -77,7 +78,7 @@ def test_load_charsets_fail_nonexistant_path():
 def test_load_charsets_fail_empty_dir():
     vsnsl = VSNSL(1)
     try:
-        vsnsl.load_charsets(Path(r"VSNSL_LIB\tests\dummy_dir"))
+        vsnsl.load_charsets(Path(r"VSNSL_LIB\tests\resources\dummy_dir"))
     except FileNotFoundError:
         assert True
 
@@ -86,12 +87,51 @@ def test_getPairs():
     pairs = vsnsl.get_pairs("abcabc", 3)
     assert pairs == ["abc", "abc"]
     
-def test_encodeData_keyError():
+def test_encodeData_invalid_input():
     vsnsl = VSNSL(1)
     charset = Charset()
     charset.load_charset({"a": "1", "b": "2", "c": "3"})
     vsnsl.charset = charset
-    try:
+    with pytest.raises(ValueError):
         vsnsl.encodeData("xyz")
-    except ValueError:
-        assert True
+
+def test_decodeData_valueError():
+    vsnsl = VSNSL(1)
+    with pytest.raises(ValueError):
+        vsnsl.decodeData("test")
+
+def test_decodeData_unfound_values():
+    vsnsl = VSNSL(1)
+    with pytest.raises(ValueError):
+        vsnsl.decodeData("202203204205")
+
+def test_decodeData_invalid_input():
+    vsnsl = VSNSL(1)
+    charset = Charset()
+    charset.charset = {"a": 101, "b": 102, "c": 103}
+    vsnsl.charset = charset
+    with pytest.raises(ValueError):
+        vsnsl.decodeData("101abc")
+
+def test_encodeBatch_exception():
+    vsnsl = VSNSL(1)
+    charset = Charset()
+    charset.charset = {"a": 101, "b": 102, "c": 103}
+    vsnsl.charset = charset
+    
+    returned = vsnsl.encodeBatch(["abc", "xyz"])
+    assert None in returned
+
+def test_decodeBatch_exception():
+    vsnsl = VSNSL(1)
+    charset = Charset()
+    charset.charset = {"a": 101, "b": 102, "c": 103}
+    vsnsl.charset = charset
+    
+    returned = vsnsl.decodeBatch(["101", "102", "103", "abc"])
+    assert None in returned
+
+def test_convertData_invalid_input():
+    vsnsl = VSNSL(1)
+    with pytest.raises(Exception):
+        vsnsl.convertData(2, "invalid_data")

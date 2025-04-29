@@ -215,12 +215,8 @@ class VSNSL:
                 pair_length = 3
                 pairs = [multiplied_data[i:i+pair_length] for i in range(0, len(multiplied_data), pair_length)]  # Create pairs
                 logger.debug(f"Pairs: {pairs}")
-            except ValueError as e:
-                logger.error(f"Data format error: {e}")
-                raise ValueError("Decryption failed due to data format error.") from e
 
-            for item in pairs:
-                try:
+                for item in pairs:
                     key = self.get_key(self.charset.charset, int(item))
                     if key is not None:
                         returnText += key  # Append the decoded character to returnText
@@ -228,18 +224,16 @@ class VSNSL:
                     else:
                         unfound_count += 1  # Increment unfound count if key is None
                         logger.warning(f"Value {item} not found in character mapping.")
-                except ValueError as e:
-                    logger.error(f"Error converting pair to integer: {e}")
-                    raise ValueError("Decryption failed due to data conversion error.") from e
+
+            except ValueError as e:
+                logger.error(f"Error during decoding process: {e}")
+                raise ValueError("Decryption failed due to data format or conversion error.") from e
 
             threshold = 2  # Set a threshold for the number of unfound values
 
             if unfound_count > threshold:
                 logger.error(f"Too many unfound values ({unfound_count}). Possible issues: incorrect encryption lock, data corruption, or charset mismatch.")
                 raise ValueError("Decryption failed due to too many unfound values. Please check the encryption lock.")
-
-        if unfound_count > 0:
-            logger.warning(f"{unfound_count} values not found in character mapping. This may indicate an incorrect encryption lock.")
 
         logger.info("Successfully decoded data.")
         return returnText  # Return the decoded text
@@ -279,17 +273,17 @@ class VSNSL:
         try:
             return self._extracted_from_convertData_26(data, newEncryptionLock)
         except Exception as e:
-            logger.exception("Exception during data conversion")
+            logger.error("Exception during data conversion")
             raise e  # Raise the exception if any error occurs
 
     # TODO Rename this here and in `convertData`
     def _extracted_from_convertData_26(self, data, newEncryptionLock):
-        oldEncryption = self.encryptionLock  # Store the current encryption lock
-        oldData = self.decodeData(data)  # Decode the data with the current lock
-        self.encryptionLock = newEncryptionLock  # Update to the new encryption lock
-        convertedData = self.encodeData(oldData)  # Encode the data with the new lock
-        self.encryptionLock = oldEncryption  # Restore the old encryption lock
-        return convertedData  # Return the converted data
+        oldEncryption = self.encryptionLock 
+        oldData = self.decodeData(data)
+        self.encryptionLock = newEncryptionLock 
+        convertedData = self.encodeData(oldData)
+        self.encryptionLock = oldEncryption
+        return convertedData
 
     #---
     

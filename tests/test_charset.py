@@ -60,3 +60,22 @@ def test_charset_load_charset_dict():
     charset = Charset()
     charset.load_charset(CHARSET_DICT)
     assert charset.get_charset() == CHARSET_DICT_CONVERTED['mapping']
+
+def test_charset_remove_key_not_found():
+    charset = Charset()
+    charset.addKey("a")
+    assert charset.rmvKey("b") == 0
+    assert "a" in charset.get_charset()
+
+def test_charset_load_invalid_json():
+    path = Path(r"VSNSL_LIB\tests\resources\invalid_json.json")
+    path.touch()
+    path.write_text("{invalid_json}")
+    charset = Charset()
+    assert charset.load_charset(path) == 0
+    path.unlink()
+
+def test_charset_load_directory():
+    path = Path(r"VSNSL_LIB\tests\resources\dummy_directory")
+    charset = Charset()
+    assert charset.load_charset(path) == 0
