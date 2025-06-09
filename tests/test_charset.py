@@ -37,7 +37,7 @@ def test_charset_not_default():
 
 def test_charset_addkey_invalid_type():
     charset = Charset()
-    assert charset.addKey(123) == 0
+    assert charset.addKey(123) == 0 # type: ignore
     assert "123" not in charset.get_charset()
 
 def test_charset_get_max_value_empty():
