@@ -54,6 +54,9 @@ class VSNSL:
         self.encryptionLock = encryptionLock if encryptionLock != 0 else 1  # Set the encryption lock
         logger.debug(f"Encryption lock set to: {self.encryptionLock}")
 
+        self.MAX_BATCH_SIZE = 1000  # Maximum batch size for encoding/decoding
+        logger.debug(f"Setting maximum batch size to: {self.MAX_BATCH_SIZE}")
+
         # Load character mappings from charset files
         self.load_charsets()
 
@@ -329,6 +332,10 @@ class VSNSL:
         """
         encoded_list = []  # Initialize a list to hold encoded results
         
+        if len(data_list) > self.MAX_BATCH_SIZE:
+            logger.error(f"Batch size {len(data_list)} exceeds maximum allowed size {self.MAX_BATCH_SIZE}. Processing canceled.")
+            return []
+
         for data in data_list:
             try:
                 encoded_list.append(self.encodeData(data))  # Encode each data item and append to the list
@@ -376,6 +383,10 @@ class VSNSL:
                 print(decoded_list) # returns: ["abc", "def", "ghi"]
         """
         decoded_list = []  # Initialize a list to hold decoded results
+
+        if len(encoded_list) > self.MAX_BATCH_SIZE:
+            logger.error(f"Batch size {len(encoded_list)} exceeds maximum allowed size {self.MAX_BATCH_SIZE}. Processing canceled.")
+            return []
         
         for encoded in encoded_list:
             try:
