@@ -2,7 +2,7 @@ import json
 import logging
 from pathlib import Path
 import sys
-from typing import List
+from typing import List, Optional
 from .charset import Charset  # Ensure Charset is imported
 from .utilities.logger import vsnsl_logger as logger
 
@@ -31,7 +31,7 @@ class VSNSL:
     .. literalinclude:: example.py
     """
 
-    def __init__(self, encryptionLock: int, charset: Charset = None):
+    def __init__(self, encryptionLock: int, charset: Optional[Charset] = None):
         """
         .. versionadded:: v0.1.1
 
@@ -57,7 +57,7 @@ class VSNSL:
         # Load character mappings from charset files
         self.load_charsets()
 
-    def load_charsets(self, charsetPath: Path = None):
+    def load_charsets(self, charsetPath: Optional[Path] = None):
         """
         Load character mappings from charset files into the Charset instance.
 
@@ -176,6 +176,9 @@ class VSNSL:
             encoded_result = str(int(returnText) * self.encryptionLock)  # Change to multiplication
             logger.info("Encoding completed successfully")
             return encoded_result  # Return the encoded result
+        else:
+            logger.error("Input data must be a string.")
+            raise ValueError("Input data must be a string.")  # Raise an error if the input is not a string
 
     #---
 
@@ -219,7 +222,7 @@ class VSNSL:
                 for item in pairs:
                     key = self.get_key(self.charset.charset, int(item))
                     if key is not None:
-                        returnText += key  # Append the decoded character to returnText
+                        returnText += str(key)  # Append the decoded character to returnText
                         logger.debug(f"Decoded {item} to {key}")
                     else:
                         unfound_count += 1  # Increment unfound count if key is None
@@ -242,6 +245,8 @@ class VSNSL:
 
     def decode(self, data: object) -> str:
         """An alternative of decodeData"""
+        if not isinstance(data, str):
+            raise TypeError("The 'data' parameter must be of type 'str'.")
         return self.decodeData(data)
 
     #---
